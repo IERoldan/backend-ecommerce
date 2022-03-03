@@ -4,21 +4,40 @@ async function addProduct(req, res) {
     try {
         console.log(req.body)
         if (!req.body.name || !req.body.price || !req.body.cod) {
-            return res.status(400).send({error:'Falta un campo obligatorio'})
+            return res.status(400).send({
+                error: 'Falta un campo obligatorio'
+            })
         }
-    
-    let newProduct = new Product(req.body);
-    await newProduct.save()
-    res.send({productoNuevo : newProduct})
-} catch(error){
+
+        let newProduct = new Product(req.body);
+        await newProduct.save()
+        res.send({
+            productoNuevo: newProduct
+        })
+    } catch (error) {
         res.status(404).send(error)
     }
 };
 
 async function getProducts(req, res) {
-    const productosDB = await Product.find()
+    const itemsPerPage = req.query.itemsPerPage ? req.query.itemsPerPage : 3;
+    const itemToSkip = req.query.page * itemsPerPage;
+    //const searchParams = req.query
+    const searchParams = req.query.name ? 
+    {
+        name: {
+            '$regex': req.query.name,
+            '$options': 'i'
+        }
+    } : {};
+    const productosDB = await Product.find(searchParams)
+                                     .sort({name :1, updatedAt: -1})
+                                     .skip(itemToSkip)
+                                     .limit(itemsPerPage);
+    const productsTotal = await Product.countDocuments(searchParams)
     res.send({
-        products: productosDB
+        products: productosDB,
+        total: productsTotal,
     })
 }
 
@@ -41,10 +60,12 @@ async function deleteProduct(req, res) {
 
 async function updateProduct(req, res) {
     const id = req.params.upd_id;
-    const productChangesToApply = req.body;
-    const updatedProduct = await user.findByIdAndUpdate(id, productChangesToApply, {
-        new: true});
-        console.log(updateProduct)
+    const updatedAt = new Date().getTime();
+    const productChangesToApply = {...req.body, updatedAt};
+    const updatedProduct = await Product.findByIdAndUpdate(id, productChangesToApply, {
+        new: true
+    });
+    console.log(updateProduct)
     if (!updatedProduct) return res.status(404).send('No se encuntro el Producto que desea modificar');
     return res.status(200).send(updatedProduct);
 }

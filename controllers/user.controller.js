@@ -66,7 +66,7 @@ async function login(req, res){
         return res.status(200).send({
             ok: true,
             msg:'Login correcto',
-            user: UserDB,
+            user: userDB,
         })
     } catch(error){
         res.status(400).send(error)
