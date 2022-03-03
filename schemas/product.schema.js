@@ -34,7 +34,8 @@ var ProductSchema = new Schema({
     },
     stock: {
         type: Boolean,
-        required: false
+        required: true,
+        default:false,
     },
     category_id: {
         type: String,
@@ -44,7 +45,6 @@ var ProductSchema = new Schema({
     },
     cod: {
         type: String,
-        ref: 'codigo',
         maxlength: 4,
         minlength: 4
     },
@@ -55,12 +55,12 @@ var ProductSchema = new Schema({
         enum: ivaOptions,
     },
     createdAt:{
-        type: Schema.Types.Date ,
-        default: new Date().getTime(),
+        type: Date,
+        default: Date.now,
         required : true ,
     },
     updatedAt:{
-        type: Schema.Types.Date ,
+        type: Date,
     },
 })
 

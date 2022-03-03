@@ -1,6 +1,6 @@
 var User = require('../schemas/user.schema');
-var bcrypt = require('bcrypt')
-var salt = 10
+var bcrypt = require('bcrypt');
+var salt = 10;
 
 async function addUser(req, res) {
     try {
@@ -42,10 +42,11 @@ async function deleteUser(req, res) {
 
     return res.status(200).send(`El usuario ${userDelete.email} ha sido borrado correctamente`);
 }
+
 async function updateUser(req, res) {
     const id = req.params.upd_id;
     const userChangesToApply = req.body;
-    const updatedUser = await user.findByIdAndUpdate(id, userChangesToApply, {
+    const updatedUser = await User.findByIdAndUpdate(id, userChangesToApply, {
         new: true});
     if (!updatedUser) return res.status(404).send('No se encuntro el usuario que desea modificar');
     return res.status(200).send(updatedUser);
@@ -56,7 +57,7 @@ async function login(req, res){
     try{
         const email = req.body.email;
         const password = req.body.password;
-        const userDB = await User.findOne({email: req.body.email});
+        const userDB = await User.findOne({email});
         if(!userDB) return res.status(404).send({msg:'El usuario no existe en nuestra base de datos'});
         const isValidPassword = await bcrypt.compare(password, userDB.password);
         if(!isValidPassword) return res.status(401).send({msg: 'Alguno de los datos no es correcto'});
