@@ -62,6 +62,7 @@ var ProductSchema = new Schema({
     updatedAt:{
         type: Date,
     },
+    clientId: { type:String, ref:'User' }
 })
 
 module.exports = mongoose.model('Product', ProductSchema)

@@ -30,6 +30,7 @@ async function getProducts(req, res) {
     } : {};
     const [productosDB, productsTotal ] = await Promise.all([
         Product.find(searchParams)
+        .populate('clientId')
         .sort({name :1, updatedAt: -1})
         .skip(itemToSkip)
         .limit(itemsPerPage),
